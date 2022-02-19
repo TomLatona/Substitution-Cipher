@@ -18,6 +18,8 @@ public class SubstitutionCipher {
 		char[] key = keygen();
 		System.out.println("key has been generated");
 		
+		String phrase = inputText();
+		
 	}
 	
 	public static char[] keygen() {
@@ -84,12 +86,20 @@ public class SubstitutionCipher {
 			
 	public static String inputText() {
 		//get user input text to be encrypted
-		return null;
-		}
+		Scanner in = new Scanner(System.in);
+		System.out.println("Enter the phrase you would like to encrypt:");
+		String phrase = in.next();
+		return phrase;
+	}
 			
-	public static void encrypt() {
-			//do the thing
-		}
+	public static void encrypt(String phrase) {
+		//parse the string by character, 
+		//if i = a certain letter, replace it with the key equivalent
+		
+		//break input into one word on each line and store in txt file
+		//check if the index of current letter is the same on alphabet as key, write to new file
+		//save once loop finishes
+	}
 	
 //	public static void decrypt(*encrypted text*) {
 //		//decrypt the text
