@@ -7,8 +7,11 @@ public class SubstitutionCipher {
 		//terminal program
 		//accept user input to map each letter to a pairing
 		//save key with those pairings
-		//create method so that plaintext can be ran through algorithm and 
-		// produce encrypted text file -- in.txt and out.txt
+		
+		//accept a message from user input
+		//use key to encrypt
+		//to do next: save encrypted string as text file and save key
+		//so they can be sent to recipient
 		
 		//part 2: decryption
 		
@@ -19,6 +22,8 @@ public class SubstitutionCipher {
 		System.out.println("key has been generated");
 		
 		String phrase = inputText();
+		String enc = encrypt(phrase, key);
+		System.out.println(enc);
 		
 	}
 	
@@ -84,21 +89,46 @@ public class SubstitutionCipher {
 		return key;
 	}
 			
+	public static char charSwap(char x, char[] key) {
+		//char x is the current character in the for loop through the input text
+		//generate a new char to return that matches with the key
+		int index=0;
+		char newChar;
+		char[] alphabet = new char[] 
+				{'a','b','c','d','e','f','g','h','i','j','k','l','m',
+				'n','o','p','q','r','s','t','u','v','w','x','y','z'};
+		
+		//iterate through alphabet and find match, save index
+		for(int i=0; i<alphabet.length; i++) {
+			if(x == alphabet[i]) {
+				index = i;
+			}
+		}
+		//match the index of that letter with the index of the key
+		newChar = key[index];
+		return newChar;
+	}
+	
 	public static String inputText() {
 		//get user input text to be encrypted
 		Scanner in = new Scanner(System.in);
 		System.out.println("Enter the phrase you would like to encrypt:");
-		String phrase = in.next();
+		String phrase = in.nextLine();
+		in.close();
 		return phrase;
 	}
 			
-	public static void encrypt(String phrase) {
-		//parse the string by character, 
-		//if i = a certain letter, replace it with the key equivalent
-		
-		//break input into one word on each line and store in txt file
-		//check if the index of current letter is the same on alphabet as key, write to new file
-		//save once loop finishes
+	public static String encrypt(String phrase, char[] key) {
+		//accept the phrase from the user to be encrypted and the key
+		//iterate through the phrase and swap each character with their corresponding letter from the key
+		//append every new char to an empty string and return it
+		String enc = "";
+		for(int i=0; i<phrase.length(); i++) {
+			char x = charSwap(phrase.charAt(i), key);
+			//System.out.println(x);
+			enc = enc + x;
+		}
+		return enc;
 	}
 	
 //	public static void decrypt(*encrypted text*) {
