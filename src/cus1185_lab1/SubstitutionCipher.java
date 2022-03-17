@@ -5,72 +5,89 @@ import java.util.*;
 public class SubstitutionCipher {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		
-		//** REMAINING TASKS **
-		//implement checks to verify user entered choices (1 or 2 options, filename entries)
-		//infinite loop for main method with optional escape sequence to quit program
-		//properly fill out text fields with info about the program
-		
+
 		//SEQUENCE OF EVENTS
 		//ask user if they want to encrypt or decrypt, run respective methods
 		
 		//if they choose encryption
 			//ask if user wants to use existing key or make new one
-			//if new key run keygen
-			//if existing key, accept the filename and then search for it in directory
-				//if found, send to encrypt method
+			//if new key save it and use for encryption
+			//user enters message to encrypt, name and save it
 		
 		//if they choose decryption
-			//ask for name of enc file, search for it
-			//ask for name of key, search for it
-			//run decrypt method
+			//ask for name of encrypted file and key file
+			//run decrypt method on file using key
+			//save decrypted file
 		
 		Scanner in = new Scanner(System.in);
-		System.out.println("Welcome ****");
-		System.out.println("Would you like to encrypt or decrypt? Enter 1 for enc or 2 for dec");
-		int choice = in.nextInt();
+		System.out.println("~~ Welcome to Substitution Cipher by Thomas Latona ~~");
+		System.out.println("This program performs symetric encryption and decryption, with it's own "
+						+ "substitution-cipher key generator. Choose an option to continue, or 'q' to quit");
 		
-		//make system that checks entry is a 1 or 2, while loop
-		if(choice == 1) {
-			RunEncryption();
+		//MENU
+		boolean menuRunning = true;
+		while(menuRunning == true) {
+			System.out.println("ENCRYPT (1) or DECRYPT (2) or QUIT (3) ? :");
+			int choice = in.nextInt();
+			
+			if(choice == 1) {
+				RunEncryption();
+			}
+			if(choice == 2) {
+				RunDecryption();
+			}
+			if(choice == 3) {
+				System.out.println("Are you sure you want to quit? (y/n): ");
+				if(in.next().equals("y")) {
+					menuRunning = false;
+				}
+			}
 		}
-		if(choice == 2) {
-			RunDecryption();
-		}	
 	}
 	
 	public static void RunEncryption() throws FileNotFoundException {
-		System.out.println("This is the encryption side of the program.");
-		System.out.println("First you will need a key, then you may type your message to be encrypted with said key.");
-		System.out.println("If you already created a key, you may use it. Simply put the file in this folder, and enter 2 at the next prompt.");
-		System.out.println("If you would like to create a new key, enter 1.");
-		String key = ""; //empty key string, will be defined later
+		System.out.println("~~ Encryption Selected ~~");
 		Scanner in = new Scanner(System.in); 
-		int choice = in.nextInt();
+		String key = ""; //empty key string, will be defined later
 		
-		//*make system that checks entry is a 1 or 2, while loop*
-		
-		//create new key
-		if(choice == 1) {
-			char[] keyArray = keygen();
-			key = keyArrayToString(keyArray);
-			saveKeyFile(key);
-		}
-		
-		//use existing key
-		if(choice == 2) {
-			System.out.println("Enter the exact name of the key file: "); //must include file extension .txt
-			String keyName = in.next();
-			File keyFile = new File(keyName);
+		boolean check=true;
+		while(check == true) { //loops if entry isnt 1 or 2
+			System.out.println("CREATE NEW KEY (1) or USE EXISTING KEY (2) or GO BACK (3) ? : ");
+			int choice = in.nextInt();
+
+			//create new key
+			if(choice == 1) {
+				check=false;
+				key = keygen();
+				saveKeyFile(key);
+			}
 			
-			//gets file contents and writes it to a string, updates key variable
-			StringBuilder fileContents = new StringBuilder((int)keyFile.length());
-			try (Scanner scanner = new Scanner(keyFile)) {
-		        while(scanner.hasNextLine()) {
-		            fileContents.append(scanner.nextLine() + System.lineSeparator());
-		        }
-		        key = fileContents.toString();
-		    }
+			//use existing key
+			if(choice == 2) {
+				
+				System.out.println("Enter the exact name of the key file: "); //must include file extension .txt
+				String keyName = in.next();
+				File keyFile = new File(keyName);
+				
+				if(!keyFile.exists()) {
+					System.out.println("File not found!");
+					System.out.println("Please make sure it is typed correct and includes .txt extension\n");
+				}
+				else {
+					check=false;
+					//gets file contents and writes it to a string, updates key variable
+					StringBuilder fileContents = new StringBuilder((int)keyFile.length());
+					try (Scanner scanner = new Scanner(keyFile)) {
+				        while(scanner.hasNextLine()) {
+				            fileContents.append(scanner.nextLine() + System.lineSeparator());
+				        }
+				        key = fileContents.toString();
+				    }
+				}
+			}
+			if(choice == 3) {
+				main(null);
+			}
 		}
 						
 		String phrase = inputText(); //gets user input for text to encrypt
@@ -82,40 +99,66 @@ public class SubstitutionCipher {
 	public static void RunDecryption() throws FileNotFoundException {
 		//get file names, write them to strings, send them to decrypt method
 		Scanner in = new Scanner(System.in);
-		System.out.println("Enter full name of key file");
-		String userInputKey = in.next();
-		System.out.println("Enter full name of encrypted file");
-		String userInputFile = in.next();
-		
 		String key = "";
 		String file = "";
-		File keyFile = new File(userInputKey);
-		File encFile = new File(userInputFile);
 		
-		StringBuilder fileContents = new StringBuilder((int)keyFile.length());
-		try (Scanner scanner = new Scanner(keyFile)) {
-	        while(scanner.hasNextLine()) {
-	            fileContents.append(scanner.nextLine() + System.lineSeparator());
-	        }
-	        key = fileContents.toString();
-	    }
+		//used for error handling if file doesnt exist
+		boolean keycheck = true;
+		boolean filecheck = true;
 		
-		StringBuilder efileContents = new StringBuilder((int)encFile.length());
-		try (Scanner escanner = new Scanner(encFile)) {
-	        while(escanner.hasNextLine()) {
-	            efileContents.append(escanner.nextLine() + System.lineSeparator());
-	        }
-	        file = efileContents.toString();
-	    }
+		//GET KEY FILE NAME FROM USER
+		//IF IT EXISTS, CONVERT IT TO STRING
+		while(keycheck == true) {
+			System.out.println("Enter full name of key file: ");
+			String userInputKey = in.next();
+			File keyFile = new File(userInputKey);
+			
+			if(!keyFile.exists()) {
+				System.out.println("File not found!");
+				System.out.println("Please make sure it is typed correct and includes .txt extension\n");
+			}
+			else {
+				keycheck = false; //breaks loop if file exists
+				StringBuilder fileContents = new StringBuilder((int)keyFile.length());
+				try (Scanner scanner = new Scanner(keyFile)) {
+			        while(scanner.hasNextLine()) {
+			            fileContents.append(scanner.nextLine() + System.lineSeparator());
+			        }
+			        key = fileContents.toString();
+			    }
+				System.out.println("Key file found!\n");
+			}
+		}
 		
-		String dec = decrypt(file, key);
+		//GET ENC FILE NAME FROM USER
+		//IF IT EXISTS, CONVERT IT TO STRING
+		while(filecheck == true) {
+			System.out.println("Enter full name of encrypted file: ");
+			String userInputFile = in.next();
+			File encFile = new File(userInputFile);
+			if(!encFile.exists()) {
+				System.out.println("File not found!");
+				System.out.println("Please make sure it is typed correct and includes .txt extension\n");
+			}
+			else {
+				filecheck = false; //breaks loop if file exists
+				StringBuilder efileContents = new StringBuilder((int)encFile.length());
+				try (Scanner escanner = new Scanner(encFile)) {
+			        while(escanner.hasNextLine()) {
+			            efileContents.append(escanner.nextLine() + System.lineSeparator());
+			        }
+			        file = efileContents.toString();
+			    }
+				System.out.println("Encrypted file found!\n");
+			}
+		}
+		
+		String dec = decrypt(file, key); //generates decrypted string using file and key
 		System.out.println("Here is your decrypted message: " + dec);
 		saveDecFile(dec);
 	}
 	
-	public static char[] keygen() {
-
-		System.out.println("This program will generate a key to encrypt a file using a substitution cipher.");
+	public static String keygen() {
 		System.out.println("Enter a lowercase letter to map to each letter of the alphabet.\n");
 		
 		boolean found = false; //used to check for duplicates before adding value to key array
@@ -174,56 +217,76 @@ public class SubstitutionCipher {
 		}
 		
 		System.out.println("\nKey has been generated!\n");
-		return key;
-	}
-			
-	public static String keyArrayToString(char[] key) {
-		//will soon be removed 
-		//going to optimize by saving key as string in keygen
-		String keyString="";
-		for(int i = 0; i<key.length; i++) {
-			keyString += key[i];
-		}
-		return keyString;
+		return new String(key);
 	}
 	
 	public static void saveKeyFile(String key) throws FileNotFoundException {
 		Scanner in = new Scanner(System.in);
-		System.out.println("What would you like to name your key: ");
-		String keyFileName = in.next();
+		boolean check = true;
 		
-		//*add a check if filename already exists*
-		File keyFile = new File(keyFileName+"KEY.txt");
-		PrintWriter writer = new PrintWriter(keyFile);
-		writer.print(key);
-		writer.close();
-		System.out.println("Key saved succesfully! Saved as '"+keyFileName+"KEY.txt'\n");
+		while(check == true) { //makes sure file doesnt already exist
+			System.out.println("What would you like to name your key: ");
+			String keyFileName = in.next();
+			File keyFile = new File(keyFileName+"KEY.txt");
+			
+			if(keyFile.exists()) {
+				System.out.println("A file already exists with that name!");
+				System.out.println("Please enter a different name\n");
+			}
+			else {
+				check=false; //break loop and save file
+				PrintWriter writer = new PrintWriter(keyFile);
+				writer.print(key);
+				writer.close();
+				System.out.println("Key saved succesfully! Saved as '"+keyFileName+"KEY.txt'\n");
+			}
+		}	
 	}
 	
 	public static void saveEncFile(String encString) throws FileNotFoundException {
 		Scanner in = new Scanner(System.in);
-		System.out.println("What would you like to name your encrypted file: ");
-		String encFileName = in.next();
+		boolean check = true;
 		
-		//check if filename already exists
-		File enc = new File(encFileName+"ENC.txt");
-		PrintWriter writer = new PrintWriter(enc);
-		writer.print(encString);
-		writer.close();
-		System.out.println("Encrypted file saved succesfully! Saved as '"+encFileName+"ENC.txt'\n");
+		while(check == true) {
+			System.out.println("What would you like to name your encrypted file: ");
+			String encFileName = in.next();
+			File enc = new File(encFileName+"ENC.txt");
+			if(enc.exists()) {
+				System.out.println("A file already exists with that name!");
+				System.out.println("Please enter a different name\n");
+			}
+			else {
+				check = false;
+				PrintWriter writer = new PrintWriter(enc);
+				writer.print(encString);
+				writer.close();
+				System.out.println("Encrypted file saved succesfully! Saved as '"+encFileName+"ENC.txt'\n");
+			}
+		}
+		
 	}
 	
 	public static void saveDecFile(String decString) throws FileNotFoundException {
 		Scanner in = new Scanner(System.in);
-		System.out.println("What would you like to name your decrypted file: ");
-		String decFileName = in.next();
+		boolean check = true;
 		
-		//*add a check if filename already exists*
-		File decFile = new File(decFileName+"DEC.txt");
-		PrintWriter writer = new PrintWriter(decFile);
-		writer.print(decString);
-		writer.close();
-		System.out.println("Key saved succesfully! Saved as '"+decFileName+"DEC.txt'\n");
+		while(check = true) {
+			System.out.println("What would you like to name your decrypted file: ");
+			String decFileName = in.next();
+			File decFile = new File(decFileName+"DEC.txt");
+			if(decFile.exists()) {
+				System.out.println("A file already exists with that name!");
+				System.out.println("Please enter a different name\n");
+			}
+			else {
+				check = false; //breaks loop and saves file
+				PrintWriter writer = new PrintWriter(decFile);
+				writer.print(decString);
+				writer.close();
+				System.out.println("Key saved succesfully! Saved as '"+decFileName+"DEC.txt'\n");
+			}
+		}
+		
 	}
 	
 	public static char charSwap(char x, String key, String type) {
