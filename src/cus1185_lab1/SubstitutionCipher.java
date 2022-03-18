@@ -45,7 +45,6 @@ public class SubstitutionCipher {
 		}
 	}
 	
-	
 	public static void RunEncryption() throws FileNotFoundException {
 		System.out.println("~~ Encryption Selected ~~");
 		Scanner in = new Scanner(System.in); 
@@ -61,7 +60,7 @@ public class SubstitutionCipher {
 			if(choice.equals("1")) {
 				check=false;
 				key = keygen();
-				saveKeyFile(key);
+				saveFile(key, "Key");
 			}
 			
 			//use existing key
@@ -77,6 +76,7 @@ public class SubstitutionCipher {
 				}
 				else {
 					check=false;
+					System.out.println("Key file found!\n");
 					//gets file contents and writes it to a string, updates key variable
 					StringBuilder fileContents = new StringBuilder((int)keyFile.length());
 					try (Scanner scanner = new Scanner(keyFile)) {
@@ -93,9 +93,9 @@ public class SubstitutionCipher {
 		}
 						
 		String phrase = inputText(); //gets user input for text to encrypt
-		String encString = encrypt(phrase, key); //encrypts user input
-		System.out.println("Encrypted text: " + encString + "\n");		
-		saveEncFile(encString);
+		String enc = encrypt(phrase, key); //encrypts user input
+		System.out.println("Encrypted text: " + enc + "\n");		
+		saveFile(enc, "Encrypted");
 	}
 	
 	public static void RunDecryption() throws FileNotFoundException {
@@ -163,7 +163,7 @@ public class SubstitutionCipher {
 		
 		String dec = decrypt(file, key); //generates decrypted string using file and key
 		System.out.println("Here is your decrypted message: " + dec);
-		saveDecFile(dec);
+		saveFile(dec, "Decrypted");
 	}
 	
 	public static String keygen() {
@@ -228,70 +228,40 @@ public class SubstitutionCipher {
 		return new String(key);
 	}
 	
-	public static void saveKeyFile(String key) throws FileNotFoundException {
+	public static void saveFile(String str, String type) throws FileNotFoundException {
 		Scanner in = new Scanner(System.in);
 		boolean check = true;
 		
-		while(check == true) { //makes sure file doesnt already exist
-			System.out.println("What would you like to name your key: ");
-			String keyFileName = in.next();
-			File keyFile = new File(keyFileName+"KEY.txt");
-			
-			if(keyFile.exists()) {
-				System.out.println("A file already exists with that name!");
-				System.out.println("Please enter a different name\n");
-			}
-			else {
-				check=false; //break loop and save file
-				PrintWriter writer = new PrintWriter(keyFile);
-				writer.print(key);
-				writer.close();
-				System.out.println("Key saved succesfully! Saved as '"+keyFileName+"KEY.txt'\n");
-			}
-		}	
-	}
-	
-	public static void saveEncFile(String encString) throws FileNotFoundException {
-		Scanner in = new Scanner(System.in);
-		boolean check = true;
-		
-		while(check == true) {
+		while(check == true) { //loops to check if file already exists
 			System.out.println("What would you like to name your encrypted file: ");
-			String encFileName = in.next();
-			File enc = new File(encFileName+"ENC.txt");
-			if(enc.exists()) {
+			String fileName = in.next();
+			
+			//appends file type to the name
+			if(type.equals("Key")) {
+				fileName+="KEY.txt";
+			}
+			
+			if(type.equals("Encrypted")) {
+				fileName+="ENC.txt";
+			}
+			
+			if(type.equals("Decrypted")) {
+				fileName+="DEC.txt";
+			}
+			
+			File file = new File(fileName);
+			
+			if(file.exists()) {
 				System.out.println("A file already exists with that name!");
 				System.out.println("Please enter a different name\n");
 			}
-			else {
+			
+			else { //breaks loop and saves file
 				check = false;
-				PrintWriter writer = new PrintWriter(enc);
-				writer.print(encString);
+				PrintWriter writer = new PrintWriter(file);
+				writer.print(str);
 				writer.close();
-				System.out.println("Encrypted file saved succesfully! Saved as '"+encFileName+"ENC.txt'\n");
-			}
-		}
-		
-	}
-	
-	public static void saveDecFile(String decString) throws FileNotFoundException {
-		Scanner in = new Scanner(System.in);
-		boolean check = true;
-		
-		while(check == true) {
-			System.out.println("What would you like to name your decrypted file: ");
-			String decFileName = in.next();
-			File decFile = new File(decFileName+"DEC.txt");
-			if(decFile.exists()) {
-				System.out.println("A file already exists with that name!");
-				System.out.println("Please enter a different name\n");
-			}
-			else {
-				check = false; //breaks loop and saves file
-				PrintWriter writer = new PrintWriter(decFile);
-				writer.print(decString);
-				writer.close();
-				System.out.println("Decrypted file saved succesfully! Saved as '"+decFileName+"DEC.txt'\n");
+				System.out.println(type + " file saved succesfully! Saved as '"+fileName+"\n");
 			}
 		}
 		
