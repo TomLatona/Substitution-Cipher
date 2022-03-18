@@ -28,22 +28,23 @@ public class SubstitutionCipher {
 		boolean menuRunning = true;
 		while(menuRunning == true) {
 			System.out.println("ENCRYPT (1) or DECRYPT (2) or QUIT (3) ? :");
-			int choice = in.nextInt();
+			String choice = in.next();
 			
-			if(choice == 1) {
+			if(choice.equals("1")) {
 				RunEncryption();
 			}
-			if(choice == 2) {
+			if(choice.equals("2")) {
 				RunDecryption();
 			}
-			if(choice == 3) {
+			if(choice.equals("3")) {
 				System.out.println("Are you sure you want to quit? (y/n): ");
 				if(in.next().equals("y")) {
-					menuRunning = false;
+					System.exit(0);
 				}
 			}
 		}
 	}
+	
 	
 	public static void RunEncryption() throws FileNotFoundException {
 		System.out.println("~~ Encryption Selected ~~");
@@ -52,18 +53,19 @@ public class SubstitutionCipher {
 		
 		boolean check=true;
 		while(check == true) { //loops if entry isnt 1 or 2
+			
 			System.out.println("CREATE NEW KEY (1) or USE EXISTING KEY (2) or GO BACK (3) ? : ");
-			int choice = in.nextInt();
-
+			String choice = in.next();
+			
 			//create new key
-			if(choice == 1) {
+			if(choice.equals("1")) {
 				check=false;
 				key = keygen();
 				saveKeyFile(key);
 			}
 			
 			//use existing key
-			if(choice == 2) {
+			if(choice.equals("2")) {
 				
 				System.out.println("Enter the exact name of the key file: "); //must include file extension .txt
 				String keyName = in.next();
@@ -85,7 +87,7 @@ public class SubstitutionCipher {
 				    }
 				}
 			}
-			if(choice == 3) {
+			if(choice.equals("3")) {
 				main(null);
 			}
 		}
@@ -98,6 +100,8 @@ public class SubstitutionCipher {
 	
 	public static void RunDecryption() throws FileNotFoundException {
 		//get file names, write them to strings, send them to decrypt method
+		System.out.println("~~ Decryption Selected ~~");
+		System.out.println("Generate encrypted text using existing key and encrypted file");
 		Scanner in = new Scanner(System.in);
 		String key = "";
 		String file = "";
@@ -109,9 +113,13 @@ public class SubstitutionCipher {
 		//GET KEY FILE NAME FROM USER
 		//IF IT EXISTS, CONVERT IT TO STRING
 		while(keycheck == true) {
-			System.out.println("Enter full name of key file: ");
+			System.out.println("Enter full name of KEY file(including .txt extension): ");
 			String userInputKey = in.next();
 			File keyFile = new File(userInputKey);
+			
+//			if(userInputKey.equals("q")) {
+//				main(null);
+//			}
 			
 			if(!keyFile.exists()) {
 				System.out.println("File not found!");
@@ -270,7 +278,7 @@ public class SubstitutionCipher {
 		Scanner in = new Scanner(System.in);
 		boolean check = true;
 		
-		while(check = true) {
+		while(check == true) {
 			System.out.println("What would you like to name your decrypted file: ");
 			String decFileName = in.next();
 			File decFile = new File(decFileName+"DEC.txt");
@@ -283,7 +291,7 @@ public class SubstitutionCipher {
 				PrintWriter writer = new PrintWriter(decFile);
 				writer.print(decString);
 				writer.close();
-				System.out.println("Key saved succesfully! Saved as '"+decFileName+"DEC.txt'\n");
+				System.out.println("Decrypted file saved succesfully! Saved as '"+decFileName+"DEC.txt'\n");
 			}
 		}
 		
@@ -292,6 +300,8 @@ public class SubstitutionCipher {
 	public static char charSwap(char x, String key, String type) {
 		//char x is the current character in the for loop through the input text
 		//generate a new char to return that matches with the key
+		
+		//*ONLY QUALM* make it ignore case so capital letters stay
 		char newChar = ' ';
 		char[] alphabet = new char[] 
 				{'a','b','c','d','e','f','g','h','i','j','k','l','m',
@@ -303,8 +313,14 @@ public class SubstitutionCipher {
 			//iterate through alphabet and find match, save index
 			for(int i=0; i<alphabet.length; i++) {
 				//if x is a letter, swap it
-				if(x == alphabet[i]) {
-					newChar = key.charAt(i);
+				if(Character.toLowerCase(x) == alphabet[i]) {
+					//if(Character.isLetter(x)) {
+						
+						newChar = key.charAt(i);
+				}
+				//if its a symbol dont swap it
+				if(!Character.isLetter(x)) {
+					return x;
 				}
 			}
 		}
@@ -313,11 +329,15 @@ public class SubstitutionCipher {
 			for(int z=0; z<key.length()-2; z++) {
 				//if x is a letter, swap it
 				if(x == key.charAt(z)) {
-					newChar = alphabet[z];
+						newChar = alphabet[z];
+					//}
+				}
+				//if its a symbol dont swap it
+				if(!Character.isLetter(x)) {
+					return x;
 				}
 			}
 		}
-		//will return swapped letter or a space
 		return newChar;
 		
 	}
@@ -334,7 +354,7 @@ public class SubstitutionCipher {
 		//iterate through user input text, swap each character with the key
 		String enc = "";
 		for(int i=0; i<phrase.length(); i++) {
-			char x = charSwap(phrase.charAt(i), key, "encrypt");
+			char x = charSwap(phrase.charAt(i), key, "encrypt"); 
 			enc += x;
 		}
 		return enc;
