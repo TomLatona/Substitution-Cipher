@@ -233,7 +233,7 @@ public class SubstitutionCipher {
 		boolean check = true;
 		
 		while(check == true) { //loops to check if file already exists
-			System.out.println("What would you like to name your encrypted file: ");
+			System.out.println("What would you like to name your + " + type +" file: ");
 			String fileName = in.next();
 			
 			//appends file type to the name
@@ -282,12 +282,12 @@ public class SubstitutionCipher {
 		if(type == "encrypt") {
 			//iterate through alphabet and find match, save index
 			for(int i=0; i<alphabet.length; i++) {
+				
 				//if x is a letter, swap it
-				if(Character.toLowerCase(x) == alphabet[i]) {
-					//if(Character.isLetter(x)) {
-						
-						newChar = key.charAt(i);
+				if(Character.toLowerCase(x) == alphabet[i]) {	
+					newChar = key.charAt(i);
 				}
+				
 				//if its a symbol dont swap it
 				if(!Character.isLetter(x)) {
 					return x;
