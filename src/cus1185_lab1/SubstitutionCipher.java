@@ -233,7 +233,7 @@ public class SubstitutionCipher {
 		boolean check = true;
 		
 		while(check == true) { //loops to check if file already exists
-			System.out.println("What would you like to name your + " + type +" file: ");
+			System.out.println("What would you like to name your " + type +" file: ");
 			String fileName = in.next();
 			
 			//appends file type to the name
