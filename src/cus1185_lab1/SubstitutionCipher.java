@@ -1,4 +1,5 @@
-package cus1185_lab1;
+//Author: Thomas Latona
+
 import java.io.*;
 import java.util.*;
 
@@ -25,8 +26,7 @@ public class SubstitutionCipher {
 						+ "substitution-cipher key generator. \nChoose an option to continue, or 'q' to quit");
 		
 		//MENU
-		boolean menuRunning = true;
-		while(menuRunning == true) {
+		while(true) {
 			System.out.println("ENCRYPT (1) or DECRYPT (2) or QUIT (3) ? :");
 			String choice = in.next();
 			
@@ -116,10 +116,6 @@ public class SubstitutionCipher {
 			System.out.println("Enter full name of KEY file(including .txt extension): ");
 			String userInputKey = in.next();
 			File keyFile = new File(userInputKey);
-			
-//			if(userInputKey.equals("q")) {
-//				main(null);
-//			}
 			
 			if(!keyFile.exists()) {
 				System.out.println("\nFile not found!");
@@ -271,13 +267,10 @@ public class SubstitutionCipher {
 		//char x is the current character in the for loop through the input text
 		//generate a new char to return that matches with the key
 		
-		//*ONLY QUALM* make it ignore case so capital letters stay
 		char newChar = ' ';
 		char[] alphabet = new char[] 
 				{'a','b','c','d','e','f','g','h','i','j','k','l','m',
 				'n','o','p','q','r','s','t','u','v','w','x','y','z'};
-		
-		//String alph = "abcdefghijklmnopqrstuvwxyz";
 		
 		if(type == "encrypt") {
 			//iterate through alphabet and find match, save index
@@ -297,10 +290,8 @@ public class SubstitutionCipher {
 		
 		if(type == "decrypt") {
 			for(int z=0; z<key.length()-2; z++) {
-				//if x is a letter, swap it
 				if(x == key.charAt(z)) {
 						newChar = alphabet[z];
-					//}
 				}
 				//if its a symbol dont swap it
 				if(!Character.isLetter(x)) {
@@ -309,7 +300,6 @@ public class SubstitutionCipher {
 			}
 		}
 		return newChar;
-		
 	}
 	
 	public static String inputText() {
