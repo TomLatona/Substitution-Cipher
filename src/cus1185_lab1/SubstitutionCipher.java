@@ -22,7 +22,7 @@ public class SubstitutionCipher {
 		Scanner in = new Scanner(System.in);
 		System.out.println("~~ Welcome to Substitution Cipher by Thomas Latona ~~");
 		System.out.println("This program performs symetric encryption and decryption, with it's own "
-						+ "substitution-cipher key generator. Choose an option to continue, or 'q' to quit");
+						+ "substitution-cipher key generator. \nChoose an option to continue, or 'q' to quit");
 		
 		//MENU
 		boolean menuRunning = true;
@@ -71,7 +71,7 @@ public class SubstitutionCipher {
 				File keyFile = new File(keyName);
 				
 				if(!keyFile.exists()) {
-					System.out.println("File not found!");
+					System.out.println("\nFile not found!");
 					System.out.println("Please make sure it is typed correct and includes .txt extension\n");
 				}
 				else {
@@ -101,7 +101,7 @@ public class SubstitutionCipher {
 	public static void RunDecryption() throws FileNotFoundException {
 		//get file names, write them to strings, send them to decrypt method
 		System.out.println("~~ Decryption Selected ~~");
-		System.out.println("Generate encrypted text using existing key and encrypted file");
+		System.out.println("Generate decrypted text using existing key and encrypted file");
 		Scanner in = new Scanner(System.in);
 		String key = "";
 		String file = "";
@@ -122,7 +122,7 @@ public class SubstitutionCipher {
 //			}
 			
 			if(!keyFile.exists()) {
-				System.out.println("File not found!");
+				System.out.println("\nFile not found!");
 				System.out.println("Please make sure it is typed correct and includes .txt extension\n");
 			}
 			else {
@@ -145,7 +145,7 @@ public class SubstitutionCipher {
 			String userInputFile = in.next();
 			File encFile = new File(userInputFile);
 			if(!encFile.exists()) {
-				System.out.println("File not found!");
+				System.out.println("\nFile not found!");
 				System.out.println("Please make sure it is typed correct and includes .txt extension\n");
 			}
 			else {
