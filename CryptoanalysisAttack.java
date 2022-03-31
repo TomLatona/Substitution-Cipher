@@ -9,9 +9,9 @@ import java.util.*;
 public class CryptoanalysisAttack {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		//This program will accept an encrypted file from the substitution-cipher
-		//It will run it through a frequency assessment using a db I will build of letter frequencies
-		//It will print the likelihood of what each letter could be, and assemble a partially decrypted version
+		//This program will accept an encrypted file created with substitution-cipher program
+		//It will generate a list of letter frequencies and display them next to the real frequencies (sourced letter frequency analysis of the Concise Oxford Dictionary (9th Edition, 1995)
+		//It will also use the list of frequencies and create a partially decrypted version of the text by comparing and swapping with the reference frequencies
 		
 		//welcome statement
 		System.out.println("~~ Welcome to Cryptanalysis Attack by Thomas Latona ~~");
@@ -19,7 +19,8 @@ public class CryptoanalysisAttack {
 		System.out.println("Import a file encrypted by Substitution Cipher, and the program will take care of the rest\n by utilizing a native reference library for letter frequencies created from an analysis of the Oxford English Dictionary.\n");
 		
 		String enc = getFile(); //user specifies file, returns contents as a string
-		String newText = getNewText(analyze(enc), refLibrary(), enc);
+		String newText = getNewText(analyze(enc), refLibrary(), enc); //gets partially decrypted text
+		
 		System.out.println("Encrypted text:		 " + enc);
 		System.out.println("Partialy decrypted text: " + newText);
 		
@@ -27,6 +28,7 @@ public class CryptoanalysisAttack {
 	}
 	
 	public static Letter[] refLibrary() {
+		//actual letter frequencies 
 		Letter[] ref = new Letter[26];
 		ref[0] = new Letter('a', 8.5);
 		ref[1] = new Letter('b', 2.07);
@@ -61,7 +63,7 @@ public class CryptoanalysisAttack {
 		Scanner in = new Scanner(System.in);
 		String encText="";
 		
-		while(true) {
+		while(true) { //in case file doesn't exist/isn't typed correctly
 			System.out.println("Encrypted file name: ");
 			String encName = in.next();
 			File file = new File(encName);
@@ -72,7 +74,7 @@ public class CryptoanalysisAttack {
 			}
 			
 			else {
-				
+				//turn file into a string
 				StringBuilder fileContents = new StringBuilder((int)file.length());
 				try (Scanner scanner = new Scanner(file)) {
 			        while(scanner.hasNextLine()) {
@@ -83,11 +85,12 @@ public class CryptoanalysisAttack {
 				break;
 			}
 		}
-		return encText;
+		return encText; //file contents as string
 	}
 	
 	
 	public static ArrayList<Letter> analyze(String enc) {
+		//WILL RETURN ARRAYLIST OF LETTERS OBJECTS CONTAINING ALL UNIQUE CHARS AND THEIR FREQUENCY
 		
 		//gets rid of spaces and characters
 		ArrayList<Character> letters = new ArrayList<Character>();
@@ -102,18 +105,17 @@ public class CryptoanalysisAttack {
 		ArrayList<Integer> frequency = new ArrayList<Integer>(letters.size());
 		for(int j = 0; j<letters.size(); j++) {
 			int counter = 0;
-				for(int u = 0; u<letters.size(); u++) {
-					if(letters.get(j).charValue() == letters.get(u).charValue()) {
-						counter++;
-					}
+			for(int u = 0; u<letters.size(); u++) {
+				if(letters.get(j).charValue() == letters.get(u).charValue()) {
+					counter++;
 				}
+			}
 			frequency.add(j, counter);	
 		}
 		
 		//get rid of duplicates
 		ArrayList<Character> letterSorted = new ArrayList<Character>();
 		ArrayList<Integer> freqSorted = new ArrayList<Integer>();
-		
 		for(int a = 0; a<letters.size(); a++) {
 			if(!letterSorted.contains(letters.get(a))) {
 				letterSorted.add(letters.get(a));
@@ -129,38 +131,38 @@ public class CryptoanalysisAttack {
 			Letter x = new Letter(letterSorted.get(s), (double)freqSorted.get(s)/total*100);
 			let.add(x);
 		}
-		return let;
+		return let; //arraylist containing all letters and their frequencies
 	}
 	
 	public static String getNewText(ArrayList<Letter> let, Letter[] ref, String enc) {
 
-		//print ref and let
+		//print reference and text letter-frequencies
 		System.out.println("Reference frequencies:");
 		for(Letter j : ref) {
 			j.print();
 		}
-		
 		System.out.println("Encrypted text frequencies:");
 		for(Letter q : let) {
 			q.print();
 		}
 		
+		//used to create partial decryption
 		StringBuilder newtext = new StringBuilder(enc);
 		
-		//iterate string
+		//iterate through encrypted text
 		for(int k=0; k<enc.length(); k++){
-			double f = 0.0;
 			
+			double f = 0.0; //stores frequency	
 			if(Character.isLetter(enc.charAt(k))) {
 
-				//find this letter in let and save its freq
+				//find the letter object in let with matching char and save its frequency
 				for(Letter x : let) {
 					if(x.getCh() == enc.charAt(k)) {
 						f = x.getFr();
 					}
 				}
 				
-				//find matching freq in ref and swap char in string
+				//find matching frequency (within range of .5) in ref and swap char in newtext
 				for(Letter y : ref) {
 					if(y.getFr() > (f-.5) && y.getFr() < (f+.5)) {
 						newtext.setCharAt(k, y.getCh());
@@ -168,12 +170,14 @@ public class CryptoanalysisAttack {
 				}
 			}
 		}
-		return newtext.toString();
+		return newtext.toString(); //partial decryption
 	}
 } 
 
-	class Letter {
-
+//Letter object: can be initialized with char for the letter and a double for the frequency
+//Contains three methods: print to display current char and frequency
+//and two get methods, for each value
+class Letter {
 	private char letter;
 	private double frequency;
 	
